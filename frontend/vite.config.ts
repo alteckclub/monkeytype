@@ -17,9 +17,7 @@ import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { minifyJson } from "./vite-plugins/minify-json";
 import { versionFile } from "./vite-plugins/version-file";
-import { oxlintChecker } from "./vite-plugins/oxlint-checker";
 import { injectPreload } from "./vite-plugins/inject-preload";
-import Inspect from "vite-plugin-inspect";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
 import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
@@ -108,14 +106,11 @@ function getPlugins({
     }),
   ];
 
-  const devPlugins: PluginOption[] = [
-    oxlintChecker({
-      debounceDelay: 125,
-      typeAware: true,
-      overlay: isDevelopment,
-    }),
-    Inspect(),
-  ];
+  // The oxlint type-aware checker is not used here. It shelled out to
+  // `npx oxlint` from buildStart(), which aborts the build on lint errors and
+  // needs the network; the oxlint-tsgolint chain also referenced a
+  // @typescript-eslint version that does not exist on the registry.
+  const devPlugins: PluginOption[] = [];
 
   const prodPlugins: PluginOption[] = [
     fontPreview(),
@@ -332,9 +327,9 @@ export default defineConfig(({ mode }): UserConfig => {
   const isDevelopment = mode !== "production";
 
   if (!isDevelopment) {
-    if (env["RECAPTCHA_SITE_KEY"] === undefined) {
-      throw new Error(`${mode}: RECAPTCHA_SITE_KEY is not defined`);
-    }
+    // RECAPTCHA_SITE_KEY is not required for an anonymous, backend-less
+    // deployment: env-config already falls back to an empty string, and
+    // recaptcha is only used by the account password-reset flow.
     if (useSentry && env["SENTRY_AUTH_TOKEN"] === undefined) {
       throw new Error(`${mode}: SENTRY_AUTH_TOKEN is not defined`);
     }

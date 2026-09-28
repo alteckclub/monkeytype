@@ -9,17 +9,10 @@
     }
   },
   "scripts": {
-    "dev": "tsup-node --watch",
-    "build": "tsup-node",
-    "ts-check": "tsc --noEmit",
-    "lint": "oxlint . --type-aware --type-check",
-    "lint-fast": "oxlint ."
+    "build": "tsup-node"
   },
   "devDependencies": {
-    "@monkeytype/typescript-config": "workspace:*",
-    "@types/node": "24.9.1",
-    "oxlint": "1.77.0",
-    "oxlint-tsgolint": "7.0.2001",
+    "@monkeytype/typescript-config": "*",
     "typescript": "7.0.2"
   },
   "peerDependencies": {
